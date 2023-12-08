@@ -17,6 +17,7 @@ from solver import CyclicScheduler
 
 from utils.visualizer import Visualizer
 from utils.decorators import decorator_timer
+from utils.kitti_convert_utils import kitti_3d_to_file
 from utils.engine_utils import progress_to_string_bar, move_data_device, reduce_loss_dict, tprint
 
 
@@ -56,6 +57,7 @@ class MonoconEngine(BaseEngine):
     
     
     def build_loader(self, is_train: bool = True):
+        
         dataset = MonoConDataset(
             base_root=self.cfg.DATA.ROOT,
             split=self.cfg.DATA.TRAIN_SPLIT if is_train else self.cfg.DATA.TEST_SPLIT,
@@ -137,6 +139,8 @@ class MonoconEngine(BaseEngine):
             
             for field in ['img_bbox', 'img_bbox2d']:
                 eval_container[field].extend(eval_results[field])
+
+            kitti_3d_to_file(eval_results,test_data['img_metas'],'submission_final',False)
         
         eval_dict = self.test_dataset.evaluate(eval_container,
                                                eval_classes=['Pedestrian', 'Cyclist', 'Car'],
