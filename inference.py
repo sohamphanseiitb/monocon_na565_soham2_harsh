@@ -1,54 +1,81 @@
 import os
+import sys
 import torch
 import argparse
-from engine.monocon_engine import MonoconEngine
-from utils.engine_utils import load_cfg, generate_random_seed, set_random_seed
 
-# Import your utility functions
-from utils.kitti_convert_utils import kitti_3d_to_file
+sys.path.append(os.path.join(os.path.dirname(__file__), ".."))
+from engine.monocon_engine import MonoconEngine
+from utils.engine_utils import tprint, load_cfg, generate_random_seed, set_random_seed
+from dataset.monocon_dataset import MonoConDataset
+from torch.utils.data import DataLoader
+
 
 # Arguments
-parser = argparse.ArgumentParser('MonoCon Inference for KITTI 3D Object Detection Dataset')
+parser = argparse.ArgumentParser('MonoCon Tester for KITTI 3D Object Detection Dataset')
 parser.add_argument('--config_file',
                     type=str,
                     help="Path of the config file (.yaml)")
-parser.add_argument('--checkpoint_file',
+parser.add_argument('--checkpoint_file', 
                     type=str,
                     help="Path of the checkpoint file (.pth)")
-parser.add_argument('--gpu_id', type=int, default=0, help="Index of GPU to use for inference")
-parser.add_argument('--output_dir',
+parser.add_argument('--gpu_id', type=int, default=0, help="Index of GPU to use for testing")
+parser.add_argument('--evaluate', action='store_true')
+parser.add_argument('--visualize', action='store_true')
+parser.add_argument('--save_dir', 
                     type=str,
-                    help="Path of the directory to save the submission file")
+                    help="Path of the directory to save the visualized results")
 
 args = parser.parse_args()
+
+
+# Some Torch Settings
+torch_version = int(torch.__version__.split('.')[1])
+if torch_version >= 7:
+    torch.backends.cuda.matmul.allow_tf32 = False
+    torch.backends.cudnn.allow_tf32 = False
+
 
 # Load Config
 cfg = load_cfg(args.config_file)
 cfg.GPU_ID = args.gpu_id
+
+
+# Set Benchmark
+# If this is set to True, it may consume more memory. (Default: True)
+if cfg.get('USE_BENCHMARK', True):
+    torch.backends.cudnn.enabled = True
+    torch.backends.cudnn.benchmark = True
+    tprint(f"CuDNN Benchmark is enabled.")
+
 
 # Set Random Seed
 seed = cfg.get('SEED', -1)
 seed = generate_random_seed(seed)
 set_random_seed(seed)
 
+tprint(f"Using Random Seed {seed}")
+
+
 # Initialize Engine
 engine = MonoconEngine(cfg, auto_resume=False, is_test=True)
 engine.load_checkpoint(args.checkpoint_file, verbose=True)
+dataset = MonoConDataset(cfg.DATA.ROOT, "test", max_objs=cfg.MODEL.HEAD.MAX_OBJS)
+engine.test_dataset = dataset
+engine.test_loader = DataLoader(engine.test_dataset,
+                                    batch_size=cfg.DATA.BATCH_SIZE,
+                                    num_workers=cfg.DATA.NUM_WORKERS,
+                                    shuffle=False,
+                                    collate_fn=dataset.collate_fn,
+                                    drop_last=False)
 
-# Inference
-tprint("Mode: Inference")
-engine.model.eval()
 
-# Ensure output directory exists
-if not os.path.exists(args.output_dir):
-    os.makedirs(args.output_dir)
+# Evaluate
+if args.evaluate:
+    tprint("Mode: Evaluation")
+    engine.evaluate()
 
-# Inference on the Test Set
-for test_data in tqdm(engine.test_loader, desc="Running Inference..."):
-    test_data = move_data_device(test_data, engine.current_device)
-    inference_results = engine.model.batch_eval(test_data)
-    
-    # Use your utility function to convert inference results to KITTI format
-    kitti_3d_to_file(inference_results, test_data['img_metas'], args.output_dir, single_file=False)
 
-tprint("Inference Completed. Results saved in:", args.output_dir)
+# Visualize
+if args.visualize:
+    tprint("Mode: Visualization")
+    engine.visualize(args.save_dir, draw_items=['2d', '3d', 'bev'])
