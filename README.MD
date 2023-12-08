@@ -1,16 +1,16 @@
-# Monocular 3D Object Detection: NAVARCH 565: Soham Phanse, Soham Purohit, [Jayaprakash Harshavardhan](mailto:jharsh@umich.edu)
-This repo is accommodated from [MonoCon](https://github.com/2gunsu/monocon-pytorch) for the NA565 final project. 
+# Monocular 3D Object Detection: NAVARCH 565: [Soham Phanse](mailto:ssphanse@umich.edu), [Soham Purohit](mailto:sphamsp@umich.edu), [Jayaprakash Harshavardhan](mailto:jharsh@umich.edu)
+This repo is accommodated from [MonoCon_NA565](https://github.com/minghanz/monocon_na565) for the NA565 final project. 
 
-After setting up the envionment and converting the final project dataset into the KITTI format, the training code should work directly. 
+<!--After setting up the environment and converting the final project dataset into the KITTI format, the training code should work directly. 
 
 ### Submission Format Generation
 The repo does not have an inference script to generate detection files in the test set, where ground truth labels are not available. You need to implement this by yourself to generate the submission file. 
 
-We provide utility functions `kitti_3d_to_file()` and `kitti_file_to_3d()` in `utils/kitti_convert_utils.py`, to generate detection files in kitti format. We also provide `merger.py` to merge detections files for all frames into a single file. Use them to write your own inference script to generate the submission file on the test set. 
+We provide utility functions `kitti_3d_to_file()` and `kitti_file_to_3d()` in `utils/kitti_convert_utils.py`, to generate detection files in kitti format. We also provide `merger.py` to merge detection files for all frames into a single file. Use them to write your own inference script to generate the submission file on the test set. 
 
 Hint: you may look into `test.py` and `MonoconEngine.evaluate()` and modify from there to output detection files. 
 
-Below are the original readme of [MonoCon](https://github.com/2gunsu/monocon-pytorch).
+Below are the original readme of [MonoCon](https://github.com/2gunsu/monocon-pytorch).-->
 
 # MonoCon (AAAI, 2022)
 This repository contains unofficial pytorch implementation for **[MonoCon: Learning Auxiliary Monocular Contexts Helps Monocular 3D Object Detection (AAAI, 2022)](https://arxiv.org/abs/2112.04628)**.   
