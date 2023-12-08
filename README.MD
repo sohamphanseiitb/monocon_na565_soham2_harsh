@@ -1,4 +1,4 @@
-# Monocular 3D Object Detection: NAVARCH 565: Soham Phanse, Soham Purohit, !(Jayaprakash Harshavardhan)[mailto:jharsh@umich.edu]
+# Monocular 3D Object Detection: NAVARCH 565: Soham Phanse, Soham Purohit, ![Jayaprakash Harshavardhan](mailto:jharsh@umich.edu)
 This repo is accommodated from [MonoCon](https://github.com/2gunsu/monocon-pytorch) for the NA565 final project. 
 
 After setting up the envionment and converting the final project dataset into the KITTI format, the training code should work directly. 
