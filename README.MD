@@ -10,7 +10,7 @@ We provide utility functions `kitti_3d_to_file()` and `kitti_file_to_3d()` in `u
 
 Hint: you may look into `test.py` and `MonoconEngine.evaluate()` and modify from there to output detection files. -->
 
-Below are the original readme of [MonoCon](https://github.com/2gunsu/monocon-pytorch).
+Below is the original readme of [MonoCon](https://github.com/2gunsu/monocon-pytorch).
 
 # MonoCon (AAAI, 2022)
 This repository contains unofficial pytorch implementation for **[MonoCon: Learning Auxiliary Monocular Contexts Helps Monocular 3D Object Detection (AAAI, 2022)](https://arxiv.org/abs/2112.04628)**.   
